@@ -1,8 +1,11 @@
 name: test
-on: push
+on: [push , workflow_dispatch]
 jobs:
     hello:
         runs-on: ubuntu-latest
         steps:
-          - name : hello
-            run: echo "hello world!" 
+          - name : get code
+            run: |
+              echo "cloning code"
+              echo "${{toJson(github)}}" 
+              git clone https://github.com/${{github.repository}}.git
