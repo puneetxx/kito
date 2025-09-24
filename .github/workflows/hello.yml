@@ -1,27 +1,54 @@
 name: github actions
-on: [push , workflow_dispatch]
+on: [push, workflow_dispatch]
+
 jobs:
-    test:
-        runs-on: ubuntu-latest
-        steps:
-          - name: create repo
-            uses: actions/checkout@v5
-           
-          - name: install packages
-            run: npm ci
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
-          - name: run test
-            run: npm run test
-    
-    deploy:
-        needs: test
-        runs-on: ubuntu-latest
-        steps:
-          - name: create repo
-            uses: actions/checkout@v5
-           
-          - name: install packages
-            run: npm ci
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
-          - name: deploy
-            run: echo "deployment"
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy
+        run: echo "deployment"
