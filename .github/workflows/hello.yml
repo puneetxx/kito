@@ -8,6 +8,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
        
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+       
+      - name: See current directory structure
+        run: |
+          echo "Current working directory: $(pwd)"
+          echo "Directory contents:"
+          ls -la
+          echo "Looking for Next.js related files:"
+          find . -name "next.config.*" -o -name "package.json" | head -10
+
       - name: Install packages
         run: npm ci
 
@@ -21,36 +35,50 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
        
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+       
+      - name: Show exact location
+        run: |
+          echo "Working directory: $(pwd)"
+          echo "Contents of root directory:"
+          ls -la
+          echo "Checking for package.json:"
+          if [ -f "package.json" ]; then
+            echo "package.json found in root"
+            cat package.json | jq '.scripts' || cat package.json
+          else
+            echo "package.json not found in root - searching..."
+            find . -name "package.json" -type f
+          fi
+
       - name: Install packages
         run: npm ci
 
       - name: Run build
         run: npm run build
-      
+
+      - name: Verify build output location
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Looking for .next directory:"
+          find . -name ".next" -type d 2>/dev/null || echo "No .next directory found"
+          echo "Directory structure after build:"
+          ls -la
+          if [ -d ".next" ]; then
+            echo ".next directory exists in current directory"
+            ls -la .next/
+          else
+            echo "No .next directory in current path"
+          fi
+
       - name: Upload build artifacts
+        # if: success() && hash('find . -name ".next" -type d 2>/dev/null')
         uses: actions/upload-artifact@v4
         with:
           name: nextjs-build
           path: .next/
           retention-days: 1
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-       
-      - name: Install packages
-        run: npm ci
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: nextjs-build
-          path: .next/
-
-      - name: Deploy application
-        run: echo "Deployment step"
-        # Add your actual deployment commands here
-        # For example: npm run deploy, or platform-specific commands
