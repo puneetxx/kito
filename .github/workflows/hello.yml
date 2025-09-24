@@ -6,3 +6,10 @@ jobs:
         steps:
           - name: create repo
             uses: actions/checkout@v5
+           
+          - name: install packages
+            run: npm ci
+
+          - name: run test
+            run: npm run test
+          
