@@ -5,7 +5,7 @@ test('renders button and reacts to click', () => {
   const handleClick = jest.fn();
   render(<Button onClick={handleClick}>Click Me</Button>);
 
-  const btn = screen.getByText('Click Me hjvh');
+  const btn = screen.getByText('Click Me');
   expect(btn).toBeInTheDocument();
 
   fireEvent.click(btn);
