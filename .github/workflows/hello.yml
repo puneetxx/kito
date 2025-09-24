@@ -1,7 +1,7 @@
-name: test
+name: github actions
 on: [push , workflow_dispatch]
 jobs:
-    hello:
+    test:
         runs-on: ubuntu-latest
         steps:
           - name: create repo
@@ -12,4 +12,16 @@ jobs:
 
           - name: run test
             run: npm run test
-          
+    
+    deploy:
+        needs: test
+        runs-on: ubuntu-latest
+        steps:
+          - name: create repo
+            uses: actions/checkout@v5
+           
+          - name: install packages
+            run: npm ci
+
+          - name: deploy
+            run: echo "deployment"
