@@ -4,8 +4,5 @@ jobs:
     hello:
         runs-on: ubuntu-latest
         steps:
-          - name : get code
-            run: |
-              echo "cloning code"
-              echo "${{toJson(github)}}" 
-              git clone https://github.com/${{github.repository}}.git
+          - name: create repo
+            uses: actions/checkout@v5
