@@ -1,4 +1,4 @@
-const nextJest = require('next/jest')
+import nextJest from '@next/jest'
 
 const createJestConfig = nextJest({
   dir: './', // path to your Next.js app
@@ -16,4 +16,5 @@ const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 }
 
-module.exports = createJestConfig(customJestConfig)
+const exportedConfig = createJestConfig(customJestConfig)
+module.exports = exportedConfig
